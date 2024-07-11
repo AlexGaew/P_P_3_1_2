@@ -7,6 +7,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "user")
@@ -15,16 +19,22 @@ public class User {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private long id;
 
     @Column
+    @NotEmpty(message = "Name should not be empty")
+    @Size(min = 2, max = 15, message = "Name should be between 2 and 15 characters")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Name must contain only letters")
     private String name;
 
     @Column
+    @NotEmpty(message = "surName should not be empty")
+    @Size(min = 2, max = 15, message = "surName should be between 2 and 15 characters")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "surName must contain only letters")
     private String surName;
 
     @Column
+    @Min(value = 1, message = "Age  should not be greater 1")
     private int age;
 
     public User(String name, String surName, int age) {

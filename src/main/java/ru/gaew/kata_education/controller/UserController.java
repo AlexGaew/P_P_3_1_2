@@ -1,8 +1,11 @@
 package ru.gaew.kata_education.controller;
 
+
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,7 +21,7 @@ import ru.gaew.kata_education.service.UserService;
 @Controller
 @RequestMapping("/")
 public class UserController {
-    private final  String REDIRECT_INFO = "redirect:/info";
+    private final String REDIRECT_INFO = "redirect:/info";
 
     private final UserService userService;
 
@@ -45,12 +48,20 @@ public class UserController {
     }
 
     @GetMapping("/user/new")
-    public String newUser(@ModelAttribute("user") User user) {
+    public String newUser(@Valid @ModelAttribute("user") User user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "user/newUser";
+        }
+
         return "user/newUser";
     }
 
     @PostMapping()
-    public String createUser(@ModelAttribute("user") User user) {
+    public String createUser(@Valid @ModelAttribute("user") User user, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "user/newUser";
+        }
+        model.addAttribute("message", "User saved successfully");
         userService.save(user);
         return REDIRECT_INFO;
     }
@@ -62,8 +73,11 @@ public class UserController {
     }
 
     @PatchMapping("/user/{id}")
-    public String update(@ModelAttribute("user") User user, @PathVariable("id") long id) {
-        userService.save(user, id);
+    public String update(@Valid @ModelAttribute("user") User user, BindingResult bindingResult, @PathVariable("id") long id) {
+        if (bindingResult.hasErrors()) {
+            return "user/userEdit";
+        }
+        userService.update(user, id);
         return REDIRECT_INFO;
     }
 
